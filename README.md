@@ -1,0 +1,2 @@
+# MauiUnpackager
+MAUIアプリをUnpackaged アプリにする
