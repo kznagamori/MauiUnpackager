@@ -101,27 +101,19 @@ namespace MauiUnpackager
 				string json = File.ReadAllText(launchSettingsPath);
 				JObject? launchSettings = JObject.Parse(json);
 
-				if (launchSettings != null && launchSettings["profiles"] != null)
+				if (launchSettings != null && launchSettings["profiles"] is JObject profiles)
 				{
-					var profiles = launchSettings["profiles"];
-					if (profiles != null)
+					foreach (var profile in profiles.Properties())
 					{
-						foreach (var profile in profiles)
+						if (profile.Value["commandName"] != null && profile.Value["commandName"]?.ToString() == "MsixPackage")
 						{
-							if (profile.First != null)
-							{
-								var first = profile.First as JProperty;
-								if (first != null && first.Value["commandName"] != null)
-								{
-									first.Value["commandName"] = "Project";
-								}
-							}
+							profile.Value["commandName"] = "Project";
 						}
-
-						string updatedJson = launchSettings.ToString(Newtonsoft.Json.Formatting.Indented);
-						File.WriteAllText(launchSettingsPath, updatedJson);
-						Console.WriteLine("launchSettings.json updated successfully.");
 					}
+
+					string updatedJson = launchSettings.ToString(Newtonsoft.Json.Formatting.Indented);
+					File.WriteAllText(launchSettingsPath, updatedJson);
+					Console.WriteLine("launchSettings.json updated successfully.");
 				}
 				else
 				{
